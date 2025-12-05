@@ -51,7 +51,7 @@ export default function HeroImage() {
             {/* Center - Logo */}
             <div className="absolute left-1/2 transform -translate-x-1/2">
               <a href="/" className="text-white text-xl lg:text-2xl font-bold">
-                <img src="./logo-removebg-preview.png" className="w-[300px] mt-8"  />
+                <img src="./SHUBHAM DEVELOPER LOGO.png" className="w-[200px] mt-8"  />
               </a>
             </div>
 
