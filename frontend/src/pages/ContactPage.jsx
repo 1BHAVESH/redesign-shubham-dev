@@ -1,19 +1,23 @@
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Phone, Mail, MapPin } from "lucide-react"
-import CommomImg from "@/components/CommonBackgroundImg"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Phone, Mail, MapPin } from "lucide-react";
+import CommomImg from "@/components/CommonBackgroundImg";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner"
-import { useMailSendMutation } from "@/redux/features/shubamdevApi"
+import { toast } from "sonner";
+import { useMailSendMutation } from "@/redux/features/shubamdevApi";
+import HeroImage from "@/components/HeroImage";
 
 export default function ContactForm() {
   const contactData = [
     { icon: <Phone size={28} />, text: "Call : +91 9024 195 195" },
     { icon: <Mail size={28} />, text: "info@subhamdevelopers.com" },
-    { icon: <MapPin size={28} />, text: "BCM SHUBHAM BUILDERS LLP 861/C, Chopasni Road, Near Bombay Motors Chouraha, Jodhpur (Rajasthan)" },
+    {
+      icon: <MapPin size={28} />,
+      text: "BCM SHUBHAM BUILDERS LLP 861/C, Chopasni Road, Near Bombay Motors Chouraha, Jodhpur (Rajasthan)",
+    },
   ];
 
   const [mailSend, { isLoading }] = useMailSendMutation();
@@ -22,7 +26,7 @@ export default function ContactForm() {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -31,11 +35,9 @@ export default function ContactForm() {
       email: data.email,
       phone: data.phone,
       message: data.message,
-      
     };
-    
 
-    console.log(finalData)
+    console.log(finalData);
     await toast.promise(mailSend(finalData).unwrap(), {
       loading: "Sending your message...",
       success: "Mail sent successfully!",
@@ -47,7 +49,33 @@ export default function ContactForm() {
 
   return (
     <>
-      <CommomImg page="Contact us" />
+      <HeroImage />
+
+      <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 text-center">
+        <h2
+          className="
+           text-[28px] sm:text-[36px] md:text-[48px] lg:text-[48px]
+           font-serif italic font-bold tracking-wide text-white
+           drop-shadow-lg
+         "
+        >
+          Contact Us
+        </h2>
+
+        <div className="flex items-center justify-center mt-3 mx-auto max-w-[300px]">
+          <div
+            className="w-3 h-3 bg-white"
+            style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+          ></div>
+
+          <div className="h-[2px] bg-white flex-grow mx-2"></div>
+
+          <div
+            className="w-3 h-3 bg-white"
+            style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+          ></div>
+        </div>
+      </div>
 
       <section className="w-full max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <p className="text-center text-[#D2AB48] text-lg font-medium">
@@ -57,7 +85,10 @@ export default function ContactForm() {
           Reach Out To Us Today!!
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-6">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mt-6 flex flex-col gap-6"
+        >
           {/* First & Last Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -65,7 +96,9 @@ export default function ContactForm() {
               <Input
                 placeholder="Enter your first name"
                 className="border-[#C29A2D] h-12 w-full"
-                {...register("firstName", { required: "First name is required" })}
+                {...register("firstName", {
+                  required: "First name is required",
+                })}
               />
               {errors.firstName && (
                 <p className="text-red-500 text-sm mt-1">
@@ -98,11 +131,16 @@ export default function ContactForm() {
               className="h-12 border-[#C29A2D] w-full"
               {...register("email", {
                 required: "Email is required",
-                pattern: { value: /^\S+@\S+$/i, message: "Enter a valid email" },
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Enter a valid email",
+                },
               })}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -116,11 +154,16 @@ export default function ContactForm() {
               maxLength={10}
               {...register("phone", {
                 required: "Phone number is required",
-                pattern: { value: /^[6-9]\d{9}$/, message: "Enter valid 10-digit Indian phone number" },
+                pattern: {
+                  value: /^[6-9]\d{9}$/,
+                  message: "Enter valid 10-digit Indian phone number",
+                },
               })}
             />
             {errors.phone && (
-              <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.phone.message}
+              </p>
             )}
           </div>
 
@@ -134,7 +177,9 @@ export default function ContactForm() {
               {...register("message", { required: "Message is required" })}
             />
             {errors.message && (
-              <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.message.message}
+              </p>
             )}
           </div>
 

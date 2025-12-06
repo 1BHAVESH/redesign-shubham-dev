@@ -25,6 +25,9 @@ import BannerManagement from "@/pages/admin/BannerManagement";
 import ProjectManagement from "@/pages/admin/ProjectManagement";
 import AdminLayout from "@/components/admin/AdminLayout";
 import HomePage from "@/components/admin/HomePage";
+import AboutShubhamDeveloper from "@/pages/AboutShubhamDeveloper";
+import OurFounder from "@/pages/OurFounder";
+import JoinVenture from "@/pages/JoinVenture";
 
 export default function AppRoutes() {
   return (
@@ -47,6 +50,9 @@ export default function AppRoutes() {
           <Route path="/medeia-2" element={<Media1 />} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/project/:id" element={<ProjectDetail />} />
+          <Route path="/about-shubham-developer" element={<AboutShubhamDeveloper />} />
+          <Route path="/our-team" element={<OurFounder />} />
+          <Route path="/join-venture" element={<JoinVenture />} />
         </Route>
 
         {/* ADMIN ROUTES */}
