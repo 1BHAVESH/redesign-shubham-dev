@@ -19,6 +19,9 @@ import {
   PlayCircle,
   Tent,
   Armchair,
+  MapPin,
+  Phone,
+  ChevronRight,
 } from "lucide-react";
 
 const BASE_URL = "http://localhost:3001";
@@ -32,6 +35,7 @@ const ProjectDetail = () => {
   const [activeTab, setActiveTab] = useState("Master Plan");
   const [swiperOpen, setSwiperOpen] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
+  const [activeSection, setActiveSection] = useState("Overview");
 
   const tabs = [
     "Overview",
@@ -40,23 +44,6 @@ const ProjectDetail = () => {
     "Location",
     "Image Gallery",
   ];
-
-  const amenities = [
-    { icon: Waves, name: "Rooftop Swimming Pool" },
-    { icon: Baby, name: "Kids Pool" },
-    { icon: Flower2, name: "Yoga Lawn" },
-    { icon: Dumbbell, name: "Open Gym" },
-    { icon: PartyPopper, name: "Party Lawn" },
-    { icon: Coffee, name: "Open Lounge with Kitchen counter" },
-    { icon: Route, name: "Rooftop Walking Track" },
-    { icon: PlayCircle, name: "Children's Play Area with Sandpit" },
-    { icon: Tent, name: "Cabanas" },
-    { icon: Armchair, name: "Senior Citizen Area" },
-  ];
-
-  console.log(project)
-
-  
 
   const nearbyLocations = [
     "AIIMS",
@@ -72,13 +59,11 @@ const ProjectDetail = () => {
 
   const plan = ["Master Plan", "Floor Plan"];
 
-  // Open image in fullscreen swiper
   const openSwiper = (index) => {
     setStartIndex(index);
     setSwiperOpen(true);
   };
 
-  // ESC key to close
   useEffect(() => {
     const handleEsc = (e) => e.key === "Escape" && setSwiperOpen(false);
     window.addEventListener("keydown", handleEsc);
@@ -86,36 +71,73 @@ const ProjectDetail = () => {
   }, []);
 
   const handleScroll = (sectionId) => {
+    setActiveSection(sectionId);
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      const offset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
     }
   };
 
+  useEffect(() => {
+    const handleScrollSpy = () => {
+      const sections = tabs.map((tab) => document.getElementById(tab));
+      const scrollPosition = window.scrollY + 150;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section && section.offsetTop <= scrollPosition) {
+          setActiveSection(tabs[i]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScrollSpy);
+    return () => window.removeEventListener("scroll", handleScrollSpy);
+  }, []);
+
   if (isLoading) {
     return (
-      <div className="max-w-[1370px] mx-auto px-6 lg:px-12 py-16">
-        <div className="animate-pulse">
-          <div className="h-[450px] bg-gray-200 rounded mb-4"></div>
-          <div className="h-8 bg-gray-200 w-1/2 rounded mb-2"></div>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="animate-pulse space-y-8">
+            <div className="h-96 bg-gray-200 rounded-2xl"></div>
+            <div className="h-12 bg-gray-200 w-2/3 rounded-lg"></div>
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-  console.log(project);
-
-  const amenitiess = project.amenities.length > 0 ? project.amenities.map(item => ({
-    icon: item.icon,
-    name: item.name,
-  })) : [];
-
-  console.log(amenitiess)
+  const amenitiess =
+    project?.amenities?.length > 0
+      ? project.amenities.map((item) => ({
+          icon: item.icon,
+          name: item.name,
+        }))
+      : [];
 
   if (!project) {
     return (
-      <div className="max-w-[1370px] mx-auto px-6 lg:px-12 py-16 text-center">
-        <h1 className="text-2xl font-bold">Project not found</h1>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Project not found
+          </h1>
+          <p className="text-gray-600">
+            The project you're looking for doesn't exist.
+          </p>
+        </div>
       </div>
     );
   }
@@ -125,9 +147,9 @@ const ProjectDetail = () => {
   );
 
   return (
-    <>
-      {/* VIDEO/IMAGE SECTION */}
-      <section className="relative w-full h-[450px] md:h-[520px] overflow-visible">
+    <div className="min-h-screen bg-white">
+      {/* HERO SECTION WITH VIDEO/IMAGE */}
+      <section className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
         {project.videoUrl ? (
           <video
             autoPlay
@@ -146,187 +168,214 @@ const ProjectDetail = () => {
           />
         )}
 
-        {/* DARK OVERLAY */}
-        <div className="absolute inset-0 bg-black/40"></div>
+        {/* GRADIENT OVERLAY */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
 
-        {/* HEADING */}
-        <div className="absolute inset-0 flex justify-center items-center">
-          <h1 className="text-white text-3xl md:text-[40px] font-extrabold">
+        {/* HERO CONTENT */}
+        <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
+          <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 tracking-tight">
             {project.title}
           </h1>
-        </div>
-
-        {/* YELLOW NAVBAR (OVERLAP) */}
-        <div className="hidden absolute bottom-0 translate-y-1/2 w-full justify-center z-20">
-          <div className="bg-[#D1A84F] max-w-[1140px] w-[90%] h-[72px] text-white flex items-center justify-between px-[67px] rounded-2xl shadow-lg text-sm md:text-base">
-            {tabs.map((tab, index) => (
-              <div key={index} className="flex flex-row gap-6">
-                <button
-                  onClick={() => handleScroll(tab)}
-                  className="hover:opacity-80 cursor-pointer text-[20px] font-medium transition-all duration-300"
-                >
-                  {tab}
-                </button>
-                <div
-                  className={`h-8 w-[1px] bg-white ${
-                    index < 4 ? "block" : "hidden"
-                  }`}
-                ></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* OVERVIEW SECTION */}
-      <section
-        id="Overview"
-        className="max-w-[1140px] mx-auto px-4 md:px-6 mt-[50px]"
-      >
-        {/* TITLE */}
-        <div className="text-center mb-10">
-          <h2 className="text-[32px] text-[#D2AB48] font-semibold">Overview</h2>
-          <div className="flex items-center justify-center">
-            <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
-            <div className="w-[208px] h-[3px] bg-[#D2AB48]"></div>
-            <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
-          </div>
           {project.tagline && (
-            <p className="text-[20px] mt-[10px] font-medium">
+            <p className="text-white/90 text-lg md:text-xl max-w-2xl font-light">
               {project.tagline}
             </p>
           )}
         </div>
 
-        {/* TEXT + IMAGE GRID */}
-        <div className="max-w-[1370px] grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* LEFT TEXT */}
-          <div>
-            {project.description && (
-              <p className="text-[16px] font-normal leading-6 text-justify">
-                {project.description}
-              </p>
-            )}
+        {/* SCROLL INDICATOR */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <ChevronRight className="text-white rotate-90" size={32} />
+        </div>
+      </section>
 
-            <p className="text-[16px] font-normal leading-6 text-justify mt-4">
-              To know more about this project, please contact
-              <a
-                href="tel:9119119249"
-                className="text-[#D2AB48] font-semibold underline mx-1"
-              >
-                911911 9249
-              </a>
-              and plan your site visit to experience the project.......
-            </p>
-
-            {/* HIGHLIGHTS */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 sm:gap-12 md:gap-20 mt-12">
-              {project.highlights?.map((item, index) => (
-                <div
-                  key={item._id || index}
-                  className="flex flex-col items-start leading-tight"
+      {/* STICKY NAVIGATION */}
+      <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 overflow-x-auto scrollbar-hide">
+            <div className="flex space-x-8">
+              {tabs.map((tab, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleScroll(tab)}
+                  className={`whitespace-nowrap pb-4 pt-4 px-2 text-sm font-medium transition-all duration-300 border-b-2 ${
+                    activeSection === tab
+                      ? "text-[#D2AB48] border-[#D2AB48]"
+                      : "text-gray-600 border-transparent hover:text-gray-900 hover:border-gray-300"
+                  }`}
                 >
-                  <p className="font-semibold text-[14px] capitalize">
-                    {item.title}
-                  </p>
-                  <p className="text-[13px] text-gray-600 capitalize">
-                    {item.subtitle}
-                  </p>
-                </div>
+                  {tab}
+                </button>
               ))}
+            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="ml-4 bg-[#D2AB48] hover:bg-[#b89434] text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-md whitespace-nowrap">
+                  Book Site Visit
+                </button>
+              </DialogTrigger>
+              <DialogContent className="[&>button]:cursor-pointer">
+                <EnquiryDialog selectedProject={project.title} />
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </nav>
+
+      {/* OVERVIEW SECTION */}
+      <section
+        id="Overview"
+        className="py-20 bg-gradient-to-b from-white to-gray-50"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* SECTION HEADER */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Overview
+            </h2>
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
+              <div className="w-24 h-0.5 bg-[#D2AB48]"></div>
+              <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
             </div>
           </div>
 
-          {/* RIGHT IMAGE */}
-          <img
-            src={`${BASE_URL}${project.imageUrl}`}
-            alt={project.title}
-            className="w-full h-[350px] rounded-xl object-cover"
-          />
+          {/* CONTENT GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* LEFT: TEXT CONTENT */}
+            <div className="space-y-6">
+              {project.description && (
+                <p className="text-gray-700 text-lg leading-relaxed">
+                  {project.description}
+                </p>
+              )}
+
+              <div className="bg-[#FFF9EA] border-l-4 border-[#D2AB48] p-6 rounded-r-lg">
+                <p className="text-gray-800 flex items-start gap-2">
+                  <Phone className="text-[#D2AB48] mt-1 flex-shrink-0" size={20} />
+                  <span>
+                    To know more about this project, contact us at{" "}
+                    <a
+                      href="tel:9119119249"
+                      className="text-[#D2AB48] font-semibold hover:underline"
+                    >
+                      911911 9249
+                    </a>{" "}
+                    to schedule your site visit.
+                  </span>
+                </p>
+              </div>
+
+              {/* HIGHLIGHTS CARDS */}
+              {project.highlights && project.highlights.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-6">
+                  {project.highlights.map((item, index) => (
+                    <div
+                      key={item._id || index}
+                      className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300"
+                    >
+                      <p className="font-semibold text-gray-900 text-sm mb-1 capitalize">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-gray-600 capitalize">
+                        {item.subtitle}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT: IMAGE */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#D2AB48]/20 to-transparent rounded-2xl transform rotate-3 group-hover:rotate-6 transition-transform duration-300"></div>
+              <img
+                src={`${BASE_URL}${project.imageUrl}`}
+                alt={project.title}
+                className="relative w-full h-[400px] lg:h-[500px] rounded-2xl object-cover shadow-2xl"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* AMENITIES SECTION */}
-      {project.amenities && project.amenities.length > 0 && (
-        <section id="Amenities" className="mt-10">
-          <div className="text-center mb-10 bg-white">
-            <h2 className="text-[32px] text-[#D2AB48] font-semibold">
-              Amenities
-            </h2>
-            <div className="flex items-center justify-center">
-              <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
-              <div className="w-[208px] h-[3px] bg-[#D2AB48]"></div>
-              <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
-            </div>
-            <p className="text-[20px] mt-[10px] font-medium">
-              The beauty lies in little detailll
-            </p>
-          </div>
-          <div className="bg-black p-8">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-                {amenitiess.map((amenity, index) => {
-                  // console.log(amenity)
-                  const img = amenity.icon;
-
-                  console.log(img)
-
-               
-                  return (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center text-center gap-4"
-                    >
-                      <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center">
-                        <img
-                        src={`${BASE_URL}${img}`}
-                          size={32}
-                          strokeWidth={2}
-                          className="text-black"
-                        />
-                      </div>
-                      <span className="text-white text-sm font-medium leading-snug">
-                        {amenity.name}
-                      </span>
-                    </div>
-                  );
-                })}
+      {amenitiess.length > 0 && (
+        <section id="Amenities" className="py-20 bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* SECTION HEADER */}
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                Amenities
+              </h2>
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
+                <div className="w-24 h-0.5 bg-[#D2AB48]"></div>
+                <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
               </div>
+              <p className="text-gray-300 text-lg">
+                The beauty lies in little details
+              </p>
+            </div>
+
+            {/* AMENITIES GRID */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+              {amenitiess.map((amenity, index) => (
+                <div
+                  key={index}
+                  className="group flex flex-col items-center text-center"
+                >
+                  <div className="bg-white rounded-full w-24 h-24 flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
+                    <img
+                      src={`${BASE_URL}${amenity.icon}`}
+                      alt={amenity.name}
+                      className="w-12 h-12 object-contain"
+                    />
+                  </div>
+                  <span className="text-white text-sm font-medium leading-snug">
+                    {amenity.name}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
       )}
 
       {/* LAYOUT PLANS SECTION */}
-      <section id="Layout Plans" className="w-full mt-[30px]">
-        <div className="text-center mb-10">
-          <h2 className="text-[32px] text-[#D2AB48] font-semibold">
-            Layout Plans
-          </h2>
-          <div className="flex items-center justify-center">
-            <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
-            <div className="w-[208px] h-[3px] bg-[#D2AB48]"></div>
-            <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
+      <section id="Layout Plans" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* SECTION HEADER */}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Layout Plans
+            </h2>
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
+              <div className="w-24 h-0.5 bg-[#D2AB48]"></div>
+              <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
+            </div>
+
+            {/* TAB BUTTONS */}
+            <div className="flex items-center justify-center gap-6">
+              {plan.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTab(item)}
+                  className={`px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 ${
+                    activeTab === item
+                      ? "bg-[#D2AB48] text-white shadow-lg scale-105"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex items-center justify-center mt-1 gap-6">
-            {plan.map((item, index) => (
-              <p
-                key={index}
-                onClick={() => setActiveTab(item)}
-                className={`font-bold text-[20.06px] cursor-pointer ${
-                  activeTab === item
-                    ? "text-[#D2AB48] underline underline-offset-4"
-                    : "text-black"
-                } hover:text-[#D2AB48]`}
-              >
-                {item}
-              </p>
-            ))}
-          </div>
-        </div>
-        {/* MAIN IMAGE SECTION */}
-        <div className="w-full py-12 bg-[#FFF9EA]">
-          <div className="max-w-[1140px] mx-auto px-4">
+
+          {/* PLAN IMAGE */}
+          <div className="bg-gradient-to-br from-[#FFF9EA] to-white p-8 rounded-2xl shadow-lg">
             {(activeTab === "Master Plan" && project.masterPlanImageUrl) ||
             (activeTab === "Floor Plan" && project.floorPlanImageUrl) ? (
               <img
@@ -335,11 +384,11 @@ const ProjectDetail = () => {
                     ? `${BASE_URL}${project.masterPlanImageUrl}`
                     : `${BASE_URL}${project.floorPlanImageUrl}`
                 }
-                alt="Layout Plan"
-                className="w-full rounded-xl shadow-lg object-cover"
+                alt={`${activeTab}`}
+                className="w-full rounded-xl shadow-lg object-contain max-h-[600px] mx-auto"
               />
             ) : (
-              <div className="w-full h-[400px] bg-gray-100 rounded-xl shadow-lg flex items-center justify-center">
+              <div className="w-full h-96 bg-gray-100 rounded-xl flex items-center justify-center">
                 <p className="text-gray-500 text-lg">
                   {activeTab} not available
                 </p>
@@ -349,19 +398,19 @@ const ProjectDetail = () => {
         </div>
       </section>
 
-      {/* CTA SECTION */}
-      <section className="relative w-full h-[350px] md:h-[420px] flex items-center justify-center overflow-hidden">
+      {/* CTA BANNER */}
+      <section className="relative w-full h-[400px] flex items-center justify-center overflow-hidden">
         <img
           src={buildingImg}
           alt="Shubham Developers"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0"></div>
-        <div className="relative text-center max-w-[700px] mx-auto px-4">
-          <h3 className="text-white text-[26px] md:text-[32px] font-bold leading-tight">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/60"></div>
+        <div className="relative text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-white text-3xl md:text-4xl font-bold leading-tight mb-6">
             Shubham Developers – Crafting Spaces, Creating Trust
           </h3>
-          <p className="text-white mt-4 text-[16px] md:text-[18px] leading-relaxed">
+          <p className="text-white/90 text-lg md:text-xl leading-relaxed mb-8 max-w-3xl mx-auto">
             With a strong vision of quality construction and customer
             satisfaction, Shubham Developers delivers modern residential &
             commercial projects that bring comfort, luxury, and a premium
@@ -369,8 +418,8 @@ const ProjectDetail = () => {
           </p>
           <Dialog>
             <DialogTrigger asChild>
-              <button className="mt-6 cursor-pointer bg-[#D2AB48] px-4 py-2 text-black w-[140px] rounded-md font-semibold hover:bg-[#b89434] transition">
-                Enquiry
+              <button className="bg-[#D2AB48] hover:bg-[#b89434] text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl">
+                Schedule a Visit
               </button>
             </DialogTrigger>
             <DialogContent className="[&>button]:cursor-pointer">
@@ -381,56 +430,65 @@ const ProjectDetail = () => {
       </section>
 
       {/* LOCATION SECTION */}
-      <section id="Location" className="w-full mt-10">
-        <div className="text-center mb-10">
-          <h2 className="text-[32px] text-[#D2AB48] font-semibold">Location</h2>
-          <div className="flex items-center justify-center">
-            <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
-            <div className="w-[208px] h-[3px] bg-[#D2AB48]"></div>
-            <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
+      <section id="Location" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* SECTION HEADER */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Location
+            </h2>
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
+              <div className="w-24 h-0.5 bg-[#D2AB48]"></div>
+              <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
+            </div>
+            <p className="text-gray-600 text-lg uppercase tracking-wide">
+              Location Benefits & Top Reasons to Invest
+            </p>
           </div>
-          <p className="text-[20px] mt-[10px] font-medium">
-            LOCATION BENEFITS & TOP REASONS TO INVEST
-          </p>
-        </div>
-        <section className="w-full bg-white py-16">
-          <div className="max-w-[1140px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            {/* LEFT BOX */}
-            <div className="bg-[#FFF7E6] rounded-2xl p-8 shadow-md">
-              <div className="max-w-[400px] mx-10">
-                <img
-                  src={subhamLogo}
-                  alt="Subham Developers"
-                  className="w-[132px] h-[56px] mb-4"
-                />
 
-                {project.location && (
-                  <p className="text-gray-700 leading-6">{project.location}</p>
-                )}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* LEFT: LOCATION INFO */}
+            <div className="bg-gradient-to-br from-[#FFF7E6] to-[#FFF9EA] rounded-2xl p-8 shadow-lg">
+              <img
+                src={subhamLogo}
+                alt="Subham Developers"
+                className="w-32 h-auto mb-6"
+              />
 
-                <h3 className="text-lg font-semibold mt-6 mb-3">
-                  Near By Locations
-                </h3>
+              {project.location && (
+                <div className="flex items-start gap-3 mb-8 p-4 bg-white/50 rounded-lg">
+                  <MapPin className="text-[#D2AB48] flex-shrink-0 mt-1" size={20} />
+                  <p className="text-gray-800 leading-relaxed">
+                    {project.location}
+                  </p>
+                </div>
+              )}
 
-                {/* NEARBY LIST */}
-                <ul className="space-y-2">
-                  {nearbyLocations.map((place, index) => (
-                    <li
-                      key={index}
-                      className="flex justify-between items-center text-gray-700"
-                    >
-                      <div className="flex items-center gap-2">
-                        <img src={arrowImg} alt="arrow" /> {place}
-                      </div>
-                      <p>3.5 KM</p>
-                    </li>
-                  ))}
-                </ul>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Nearby Locations
+              </h3>
+
+              <div className="space-y-3">
+                {nearbyLocations.map((place, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center p-3 bg-white rounded-lg hover:shadow-md transition-shadow duration-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img src={arrowImg} alt="arrow" className="w-4 h-4" />
+                      <span className="text-gray-700 font-medium">{place}</span>
+                    </div>
+                    <span className="text-[#D2AB48] font-semibold text-sm">
+                      3.5 KM
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* RIGHT SIDE GOOGLE MAP */}
-            <div className="w-auto h-[200px] sm:w-[554px] sm:h-[536px] rounded-2xl overflow-hidden shadow-md">
+            {/* RIGHT: MAP */}
+            <div className="w-full h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-xl border-4 border-white">
               <iframe
                 src={
                   project.mapUrl ||
@@ -441,66 +499,74 @@ const ProjectDetail = () => {
                 loading="lazy"
                 allowFullScreen=""
                 referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
               ></iframe>
             </div>
           </div>
-        </section>
+        </div>
       </section>
 
       {/* IMAGE GALLERY SECTION */}
       {galleryImages.length > 0 && (
-        <section id="Image Gallery">
-          <div className="text-center mb-10">
-            <h2 className="text-[32px] text-[#D2AB48] font-semibold">
-              Image Gallery
-            </h2>
-            <div className="flex items-center justify-center">
-              <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
-              <div className="w-[208px] h-[3px] bg-[#D2AB48]"></div>
-              <div className="w-3 h-[10px] bg-[#D2AB48] rotate-45"></div>
+        <section id="Image Gallery" className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* SECTION HEADER */}
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Image Gallery
+              </h2>
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
+                <div className="w-24 h-0.5 bg-[#D2AB48]"></div>
+                <div className="w-3 h-3 bg-[#D2AB48] rotate-45"></div>
+              </div>
+              <p className="text-gray-600 text-lg">
+                The address of royal living
+              </p>
             </div>
-            <p className="text-[20px] mt-[10px] font-medium">
-              The address of royal living
-            </p>
-          </div>
-          <section className="max-w-[1140px] mx-auto px-4 md:px-6 my-16">
-            {/* gallery grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+            {/* GALLERY GRID */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {galleryImages.map((image, index) => (
-                <img
+                <div
                   key={index}
-                  src={image}
                   onClick={() => openSwiper(index)}
-                  className="rounded-xl shadow-md w-full h-[220px] object-cover cursor-pointer hover:scale-105 transition duration-300"
-                  alt={`Gallery ${index + 1}`}
-                />
+                  className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300"
+                >
+                  <img
+                    src={image}
+                    className="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    alt={`Gallery ${index + 1}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+                    <span className="text-white font-semibold">View Image</span>
+                  </div>
+                </div>
               ))}
             </div>
-          </section>
+          </div>
 
-          {/* FULLSCREEN SWIPER (LIGHTBOX MODE) */}
+          {/* FULLSCREEN LIGHTBOX */}
           {swiperOpen && (
             <div
-              className="fixed inset-0 bg-black/90 z-50 flex justify-center items-center p-0"
+              className="fixed inset-0 bg-black/95 z-50 flex justify-center items-center"
               onClick={() => setSwiperOpen(false)}
             >
               <div
-                className="relative bg-black rounded-xl shadow-xl w-[50vw] h-[50vh] flex items-center justify-center p-2"
+                className="relative w-[90vw] h-[90vh] md:w-[80vw] md:h-[80vh] flex items-center justify-center"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* CLOSE BUTTON */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setSwiperOpen(false);
                   }}
-                  className="cursor-pointer hover:border-2 hover:border-yellow-300 absolute top-4 right-4 bg-black text-white px-4 py-2 rounded-full z-[100] text-lg"
+                  className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white w-12 h-12 rounded-full z-50 flex items-center justify-center transition-all duration-200"
                 >
                   ✕
                 </button>
 
-                {/* SWIPER */}
-                <div className="w-full h-full pointer-events-auto [&_.swiper-button-next]:hidden [&_.swiper-button-prev]:hidden md:[&_.swiper-button-next]:block md:[&_.swiper-button-prev]:block [&_.swiper-button-next]:text-white [&_.swiper-button-prev]:text-white">
+                <div className="w-full h-full [&_.swiper-button-next]:text-white [&_.swiper-button-prev]:text-white [&_.swiper-pagination-bullet]:bg-white">
                   <Swiper
                     initialSlide={startIndex}
                     modules={[Navigation, Pagination]}
@@ -510,10 +576,10 @@ const ProjectDetail = () => {
                   >
                     {galleryImages.map((img, i) => (
                       <SwiperSlide key={i}>
-                        <div className="flex justify-center items-center w-full h-full pointer-events-auto p-4 sm:p-12">
+                        <div className="flex justify-center items-center w-full h-full p-8">
                           <img
                             src={img}
-                            className="max-w-full max-h-full object-contain"
+                            className="max-w-full max-h-full object-contain rounded-lg"
                             alt={`Gallery image ${i + 1}`}
                           />
                         </div>
@@ -526,7 +592,7 @@ const ProjectDetail = () => {
           )}
         </section>
       )}
-    </>
+    </div>
   );
 };
 

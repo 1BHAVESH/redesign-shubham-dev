@@ -261,7 +261,7 @@ export const deleteProject = async (req, res) => {
 export const getProjectTtile = async (req, res) => {
   try {
     // Fetch only title from DB
-    const projectTitle = await Project.find().select("title -_id");
+    const projectTitle = await Project.find().select("title");
 
     // If no projects found
     if (!projectTitle || projectTitle.length === 0) {

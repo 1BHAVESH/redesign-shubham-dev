@@ -28,9 +28,9 @@ export default function EnquiryDialog({ selectedProject }) {
   // console.log(selectedProject)
   const [mailSend, { isLoading }] = useMailSendMutation();
 
-  // const {data, isLoading : projectTitleLoading} = useGetProjectTitleQuery()
+   const {data, isLoading : projectTitleLoading} = useGetProjectTitleQuery()
 
-  if(projectTitleLoading) return <h1>please title</h1>
+  // if(projectTitleLoading) return <h1>please title</h1>
 
   // console.log(data)
 
@@ -72,7 +72,11 @@ export default function EnquiryDialog({ selectedProject }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-3">
+   <>
+   {
+    projectTitleLoading ? (<h1>Please wait</h1>) : 
+    (
+       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-3">
 
       {/* ⭐ PROJECT SELECT INPUT */}
       <div>
@@ -174,5 +178,8 @@ export default function EnquiryDialog({ selectedProject }) {
         {isLoading ? "Sending..." : "Submit Enquiry"}
       </Button>
     </form>
+    )
+   }
+   </>
   );
 }

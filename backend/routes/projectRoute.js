@@ -84,11 +84,11 @@ const uploadFields = upload.fields([
 ]);
 
 router.get("/", getAllProjects);
+router.get("/get-title", getProjectTtile)
 router.get("/slug/:slug", getProjectBySlug);
 router.get("/:id", getProjectById);
 router.post("/", protect, uploadFields, createProject);
 router.put("/:id", protect, uploadFields, updateProject);
 router.delete("/:id", protect, deleteProject);
-router.get("/get-title", getProjectTtile)
 
 export default router;

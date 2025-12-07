@@ -1,15 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Briefcase, MapPin, Users } from "lucide-react";
 import HeroImage from "@/components/HeroImage";
-
-// Mock CommonBackgroundImg component - replace with your actual import
-const CommomImg = ({ page }) => (
-  <div className="relative h-64 bg-gradient-to-r from-amber-600 to-amber-800 flex items-center justify-center">
-    <div className="text-center text-white">
-      <h1 className="text-4xl md:text-5xl font-bold">{page}</h1>
-    </div>
-  </div>
-);
 
 const jobList = [
   {
@@ -35,83 +26,74 @@ const jobList = [
 ];
 
 const Careers = () => {
+  const [visible, setVisible] = useState(true)
+
+  console.log(visible)
   return (
     <div className="min-h-screen bg-white">
       {/* PAGE HERO SECTION */}
-            <HeroImage />
-      
-            <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 text-center">
-              <h2
-                className="
-            text-[28px] sm:text-[36px] md:text-[48px] lg:text-[48px]
-            font-serif italic font-bold tracking-wide text-white
-            drop-shadow-lg
-          "
-              >
-                Career
-              </h2>
-      
-              <div className="flex items-center justify-center mt-3 mx-auto max-w-[300px]">
-                <div
-                  className="w-3 h-3 bg-white"
-                  style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
-                ></div>
-      
-                <div className="h-[2px] bg-white flex-grow mx-2"></div>
-      
-                <div
-                  className="w-3 h-3 bg-white"
-                  style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
-                ></div>
-              </div>
-            </div>
+      <div className="relative min-h-[270px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[501px]">
+        <HeroImage visible={visible} setVisible={setVisible} />
+
+        <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
+        
+        <div className={`${visible ? "absolute top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-[15] text-center w-full px-4 pointer-events-none" : "hidden"}`}>
+          <h2 className={`${visible ? "text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif italic font-bold tracking-wide text-white drop-shadow-lg" : "hidden"}`}>
+            Career
+          </h2>
+          
+          <div className="flex items-center justify-center mt-3 sm:mt-4 mx-auto max-w-[200px] sm:max-w-[250px] md:max-w-[300px]">
+            <div
+              className="w-2 h-2 sm:w-3 sm:h-3 bg-white"
+              style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+            ></div>
+            
+            <div className="h-[1.5px] sm:h-[2px] bg-white flex-grow mx-2"></div>
+            
+            <div
+              className="w-2 h-2 sm:w-3 sm:h-3 bg-white"
+              style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+            ></div>
+          </div>
+        </div>
+      </div>
 
       {/* MAIN CONTENT */}
-      <section className="max-w-[1370px] mx-auto px-4 md:px-8 py-12">
-        
-      
-
-        {/* HEADING */}
-        {/* <h2 className="text-[20px] md:text-[24px] font-normal mb-3">
-          Build Your Future With Us
-        </h2>
-
-        <p className="leading-relaxed mb-10 max-w-[1140px] text-justify">
-          At <strong>Your Company Name</strong>, we don't just build properties —
-          we build people, careers, and long-term success stories. As a fast-growing
-          real estate company, we are always looking for passionate, driven, and
-          talented individuals to join our team. If you're ready to grow in an
-          exciting industry filled with opportunities, you've come to the right place.
-        </p> */}
-
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 lg:py-16">
         {/* CURRENT OPENINGS */}
-        <h3 className="text-[24px] font-medium mb-6">Current Openings</h3>
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-medium mb-6 sm:mb-8 text-center sm:text-left">
+          Current Openings
+        </h3>
 
         {/* GRID OF JOBS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {jobList.map((job, index) => (
             <div
               key={index}
-              className="bg-[#FFFBF2] p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 border border-amber-100"
+              className="bg-[#FFFBF2] p-5 sm:p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 border border-amber-100"
             >
               {/* ICON + TITLE */}
               <div className="flex items-center gap-3 mb-4">
-                <div className="bg-[#D2AB48] p-2 rounded-lg">
-                  <Briefcase className="text-white" size={24} />
+                <div className="bg-[#D2AB48] p-2 rounded-lg flex-shrink-0">
+                  <Briefcase className="text-white" size={20} />
                 </div>
-                <h4 className="font-semibold text-[18px] text-gray-800">{job.title}</h4>
+                <h4 className="font-semibold text-base sm:text-lg text-gray-800 leading-tight">
+                  {job.title}
+                </h4>
               </div>
 
               {/* LOCATION */}
               <div className="flex items-start gap-2 mb-3">
-                <MapPin className="text-[#D2AB48] mt-1 flex-shrink-0" size={18} />
-                <p className="text-[14px] text-gray-600 leading-relaxed">{job.place}</p>
+                <MapPin className="text-[#D2AB48] mt-1 flex-shrink-0" size={16} />
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                  {job.place}
+                </p>
               </div>
 
               {/* POSITIONS */}
               <div className="flex items-center gap-2 mb-4">
-                <Users className="text-[#D2AB48]" size={18} />
-                <p className="text-[14px] text-gray-600">
+                <Users className="text-[#D2AB48] flex-shrink-0" size={16} />
+                <p className="text-xs sm:text-sm text-gray-600">
                   {job.position} {job.position === 1 ? 'Position' : 'Positions'} Available
                 </p>
               </div>
@@ -119,15 +101,13 @@ const Careers = () => {
               {/* APPLY BUTTON */}
               <a 
                 href="tel:+917597074381"
-                className="block w-full bg-[#D2AB48] hover:bg-[#C19A3A] text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 text-center"
+                className="block w-full bg-[#D2AB48] hover:bg-[#C19A3A] text-white font-medium py-2 sm:py-2.5 px-4 rounded-lg transition-colors duration-200 text-center text-sm sm:text-base"
               >
                 Call Now
               </a>
             </div>
           ))}
         </div>
-
-        
       </section>
     </div>
   );
